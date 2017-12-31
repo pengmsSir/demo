@@ -1,0 +1,814 @@
+${extends("/pms/pms_layout.httl")}
+<!--#macro(head)-->
+<!--#end-->
+<!--#macro(content)-->
+<div id="form1" style="padding-top:5px;background-color:white;">
+    <div style="text-align: center;font-size: 20px;margin-top:15px;font-weight: bold;">账户开立申请表单</div>
+    <hr style="height:1px; border:none;border-top:1px dashed #c6cdd5;"/>
+
+    <!--#set(GFLoginUser user=session.SESSION_USER)-->
+    <table style="width:100%;height:100%;table-layout:fixed;margin-top:15px;margin-left:20px;" class="nui-form-table">
+        <input id="orgType" value='${user.orgType}' class="nui-hidden">
+        <tr>
+            <td style="text-align:left;">
+                <span><strong>申请人：</strong><u>${user.userName}</u></span>
+                <span style="margin-left:30px;"><strong>所属机构：</strong><u>${user.orgTree}</u></span>
+                <span style="margin-left:30px;"><strong>部门负责人：</strong><u>${user.managerUserName}</u></span>
+            </td>
+        </tr>
+    </table>
+
+    <div class="boxshaow">
+        <div class="pms-color-lable-new">基本信息</div>
+        <table style="width:100%;height:100%;table-layout:fixed;padding-top:30px;padding-bottom: 30px;" class="nui-form-table">
+        <tr>
+            <td style="width:5%;"></td>
+            <th class="nui-form-label" style="width:8%;text-align:left;"><label>项目名称：</label></th>
+            <td style="width: 35%;">
+                <input id="projectId" class="nui-buttonedit nui-form-input" showClose="true" required="true" name="acc.projectId" allowInput="false"
+                       onbuttonclick="onButtonClick"   oncloseclick="onCloseClick" style="width: 100%;"/>
+            </td>
+            <td style="width:5%;"></td>
+            <th class="nui-form-label" style="width:8%;text-align:left;"><label>账户名称：</label></th>
+            <td style="width:35%;">
+                <input id="acc.accountName" class="nui-textbox nui-form-input" maxlength='50' name="acc.accountName" required="true" style="width:100%"/>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="width:5%;"></td>
+            <th class="nui-form-label" style="width:8%;text-align:left;"><label>客户联系人：</label></th>
+            <td style="width: 35%;">
+                <input id="acc.custContact" class="nui-textbox nui-form-input" name="acc.custContact"  maxlength='50' required="true" style="width: 100%"/>
+            </td>
+            <td style="width:5%;"></td>
+            <th class="nui-form-label" style="width:8%;text-align:left;"><label>联系方式：</label></th>
+            <td style="width:35%;">
+                <input id="acc.contactWay" class="nui-textbox nui-form-input" name="acc.contactWay"   maxlength='80'required="true" style="width: 100%"/>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="width:5%;"></td>
+            <th class="nui-form-label" style="width:8%;text-align:left;"><label>开户说明：</label></th>
+            <td colspan="4">
+                <textarea id="accnotes"  name="acc.notes" required="true"  style="height:90px;width:100%"></textarea>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="width:5%;"></td>
+            <th class="nui-form-label" style="width:8%;text-align:left;"><label>附件信息:</label></th>
+            <td>
+                <div id="file_upload" style="margin-top:20px;width:100%;"></div>
+            </td>
+            <td style="width:5%;"></td>
+            <th class="nui-form-label" style="width:8%;text-align:left;"></th>
+            <td></td>
+            <td></td>
+        </tr>
+
+    </table>
+    </div>
+
+    <div class="boxshaow">
+        <div class="pms-color-lable-new">账户选择</div>
+        <table style="width:100%;height:100%;table-layout:fixed;padding-top:30px;padding-bottom: 30px;" class="nui-form-table">
+            <tr>
+                <td style="width:5%;"></td>
+                <td><span  class="nui-checkbox" id="id_open_tg" name="acc.isOpenTg"  style="font-weight: bold;" oncheckedchanged="onOpenTG();">开立托管账户</span>
+                </td>
+                <td style="width: 50%;"><a href="javascript:void(0)" onclick="authConfig(5)">资料清单</a></td>
+            </tr>
+            <tr id="id_acc_info">
+                <td colspan="3">
+                    <table style="width:100%;height:100%;">
+                        <tr>
+                            <td style="width:5%;"></td>
+                            <th class="nui-form-label" style="width:10%;text-align:left;"></th>
+                            <td style="width:35%;">
+                                <select name="acc.openBranchLevel"  id="openBranchLevel"  value="2" onvaluechanged="openBranchLevelChange" class="nui-radiobuttonlist">
+                                    <option value="1">总行开户</option>
+                                    <option value="2">分行开户</option>
+                                </select>
+                            </td>
+                            <td style="width:5%;"></td>
+                            <th class="nui-form-label" style="width:10%;text-align:left;"></th>
+                            <td style="width:35%;">
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="width:5%;"></td>
+                            <td  style="width:10%;text-align:left;"><label style="margin-left:30px;">账户性质：</label></td>
+                            <td style="width:35%;">
+                                <input id="acc.accountProp" class="nui-dictcombobox nui-form-input" name="acc.accountProp" style="width: 89%"
+                                       valueField="dictId" textField="dictName" dictTypeId="CONF_ACCOUNT_PROP" required="true" value="1"/>
+                            </td>
+                            <td style="width:5%;"></td>
+                            <td  style="width:10%;text-align:left;"><label style="margin-left:30px;">账户类型：</label></td>
+                            <td style="width:35%;">
+                                <input id="acc.accountType" class="nui-dictcombobox nui-form-input" name="acc.accountType"  style="width: 89%"
+                                       valueField="dictId" textField="dictName" dictTypeId="CONF_ACCOUNT_TYPE" required="true"/>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="width:5%;"></td>
+                            <td style="width:10%;text-align:left;"><label style="margin-left:30px;">开户行：</label></td>
+                            <td style="width:35%;">
+                                <input class="nui-buttonedit nui-form-input" showClose="true"  id="accountBank" required="true"  allowInput="false"
+                                       onbuttonclick="onbankTypeButtonClick"  oncloseclick="onCloseClick" style="width:89%;" name="acc.accountBank"  />
+                            </td>
+                            <td style="width:5%;"></td>
+                            <td style="width:10%;text-align:left;"><label style="margin-left:30px;">币种：</label></td>
+                            <td style="width:35%;">
+                                <input id="acc.monkeyType" class="nui-dictcombobox nui-form-input" name="acc.monkeyType" style="width: 89%" value="0"
+                                       valueField="dictId" textField="dictName" dictTypeId="CONF_MONKEY_TYPE" required="true" />
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="width:5%;"></td>
+                            <td style="width:10%;text-align:left;"><label style="margin-left:30px;">利率类型：</label></td>
+                            <td style="width:35%;">
+                                <input id="acc.rateType" class="nui-dictcombobox nui-form-input" name="acc.rateType"  style="width: 89%"
+                                       valueField="dictId" textField="dictName" dictTypeId="CONF_RATE_TYPE" required="true"/>
+                            </td>
+                            <td style="width:5%;"></td>
+                            <td style="width:10%;text-align:left;"><label style="margin-left:30px;">利率(%)：</label></td>
+                            <td style="width:35%;">
+                                <input id="acc.rate" class="nui-textbox nui-form-input" name="acc.rate" required="true" vtype="float;" style="width:89%"/>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="width:5%;"></td>
+                            <td style="width:10%;text-align:left;"><label style="margin-left:30px;">印鉴卡号：</label></td>
+                            <td style="width:35%;">
+                                <input id="acc.asignNo" class="nui-textbox nui-form-input" name="acc.asignNo"  required="false" style="width: 89%"/>
+                            </td>
+                            <td style="width:5%;"></td>
+                            <td style="width:10%;text-align:left;"><label style="margin-left:30px;">免费标识：</label></td>
+                            <td style="width:35%;">
+                                <span  class="nui-checkbox" id="acc.isFreeOpen" name="acc.isFreeOpen" >免账户开户费</span>
+                                &nbsp;&nbsp;
+                                <span  class="nui-checkbox" id="acc.isFreeMng" name="acc.isFreeMng">免账户管理费</span>
+                                &nbsp;&nbsp;
+                                <span  class="nui-checkbox" id="acc.isFreePoundage" name="acc.isFreePoundage">免划款手续费</span>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:5%;"></td>
+                <td><span  class="nui-checkbox" id="acc.isOpenSF" name="acc.isOpenSf" onValueChanged="frAndSf()"  style="font-weight: bold;">开立券商模式(三方存管账户)</span></td>
+                <td style="width: 50%;"><a href="javascript:void(0)" onclick="authConfig(10)">资料清单</a></td>
+            </tr>
+            <tr>
+                <td style="width:5%;"></td>
+                <td><span  class="nui-checkbox" id="acc.isOpenFR" name="acc.isOpenFr"  onValueChanged="frAndSf()"  style="font-weight: bold;">开立法人结算(席位租用)</span></td>
+                <td style="width: 50%;"><a href="javascript:void(0)" onclick="authConfig(1)">资料清单</a></td>
+            </tr>
+            <tr>
+                <td style="width:5%;"></td>
+                <td><span  class="nui-checkbox" id="id_open_zq" name="acc.isOpenZq"  style="font-weight: bold;" oncheckedchanged="onOpenZQ();">开立证券账户</span></td>
+                <td style="width: 50%;"></td>
+            </tr>
+            <tr id="id_acc_zqsh">
+                <td style="width:5%;"></td>
+                <td><span  class="nui-checkbox" id="id_open_zqsh" name="acc.isOpenZqsh"  style="margin-left:30px;">中国结算上海分公司证券账户</span></td>
+                <td style="width: 50%;"><a href="javascript:void(0)" onclick="authConfig(7)">资料清单</a></td>
+            </tr>
+            <tr id="id_acc_zqsz">
+                <td style="width:5%;"></td>
+                <td><span  class="nui-checkbox" id="id_open_zqsz" name="acc.isOpenZqsz"  style="margin-left:30px;">中国结算深圳分公司证券账户</span></td>
+                <td style="width: 50%;"><a href="javascript:void(0)" onclick="authConfig(8)">资料清单</a></td>
+            </tr>
+            <tr id="id_acc_zqbj">
+                <td style="width:5%;"></td>
+                <td><span  class="nui-checkbox" id="id_open_zqbj" name="acc.isOpenZqbj"  style="margin-left:30px;">中国结算北京分公司证券账户</span></td>
+                <td style="width: 50%;"><a href="javascript:void(0)" onclick="authConfig(6)">资料清单</a></td>
+            </tr>
+            <tr id="id_acc_gzqh">
+                <td style="width:5%;"></td>
+                <td><span  class="nui-checkbox" id="id_open_gzqh" name="acc.isOpenGzqh"  style="font-weight: bold;">开立股指期货账户</span></td>
+                <td style="width: 50%;"><a href="javascript:void(0)" onclick="authConfig(3)">资料清单</a></td>
+            </tr>
+            <tr>
+                <td style="width:5%;"></td>
+                <td><span  class="nui-checkbox" id="id_open_yhj" name="acc.isOpenYhj"  style="font-weight: bold;" oncheckedchanged="onOpenYHJ();">开立银行间账户</span></td>
+                <td style="width: 50%;"></td>
+            </tr>
+            <tr id="id_acc_yhjzy">
+                <td style="width:5%;"></td>
+                <td><span  class="nui-checkbox" id="id_open_yhjzy" name="acc.isOpenYhjzy"  style="margin-left:30px;">中央债券结算公司债券交易账户</span></td>
+                <td style="width: 50%;"><a href="javascript:void(0)" onclick="authConfig(9)">资料清单</a></td>
+            </tr>
+            <tr id="id_acc_yhjsh">
+                <td style="width:5%;"></td>
+                <td><span  class="nui-checkbox" id="id_open_yhjsh" name="acc.isOpenYhjsh"  style="margin-left:30px;">上海清算所债券交易账户</span></td>
+                <td style="width: 50%;"><a href="javascript:void(0)" onclick="authConfig(22)">资料清单</a></td>
+            </tr>
+        </table>
+    </div>
+    <div class="nui-toolbar" style="padding:0px;margin-top:20px;background-color: transparent;" borderStyle="border:0;">
+	    <table width="100%">
+	        <tr>
+	            <td style="text-align:center;">
+                    <!--<a id="save_button" class="nui-button" onclick="onSave" iconCls="icon-save"><i class="fa fa-check-square-o">&nbsp;</i>保存</a>-->
+                    <!--<span style="display:inline-block;width:25px;"></span>-->
+	                <a id="submit_button" class="nui-button" onclick="onSubmit" iconCls="icon-ok"><i class="fa fa-check-square-o">&nbsp;</i>提交</a>
+                    <span style="display:inline-block;width:25px;"></span>
+	                <a id="cancel_button" class="nui-button" onclick="onCancel" iconCls="icon-cancel"><i class="fa fa-undo">&nbsp;</i>取消</a>
+                </td>
+	        </tr>
+	    </table>
+	</div>
+</div>
+<br/>
+<script type="text/javascript">
+    var form;
+    var grid;
+    var orgType;
+    require(['nui','jquery','kindeditor','common','ecm'],function(nui,$){
+        nui.parse();
+        form = new nui.Form("#form1");
+        form.setChanged(false);
+        $(document.body).show();
+        orgType= nui.get("orgType").getValue();
+        $("#id_acc_info").hide();
+        $("#id_acc_zqsh").hide();
+        $("#id_acc_zqsz").hide();
+        $("#id_acc_zqbj").hide();
+        $("#id_acc_yhjzy").hide();
+        $("#id_acc_yhjsh").hide();
+        grid = nui.get("datagrid1");
+        initEcmUploader("#file_upload","P33",'',true,true,'hidden_doc_id');
+
+        accnotesEditor = initKindEditor("accnotes");
+    });
+
+
+    function BranchLevelByOrgType(orgType){
+        if(orgType=="1"||orgType=="2"){
+            nui.get("openBranchLevel").setValue(1);
+        }else if(orgType=="3"||orgType=="4"){
+            nui.get("openBranchLevel").setValue(2);
+        }
+        openBranchLevelChange();
+    }
+
+    function openBranchLevelChange(){
+        var orgname,orgid;
+        $.ajax({
+            url:"${basePath}/pms/bankTypeZ",
+            type:'get',
+            data:'',
+            cache: false,
+            async:false,
+            contentType: 'application/json',
+            success:function(t){
+                orgid=  t.data.orgid;
+                orgname= t.data.orgname;
+
+            }
+        });
+
+       var openBranchLevelValue= nui.get("openBranchLevel").getValue();
+       if(openBranchLevelValue=="1"){
+           nui.get("accountBank").setText(orgname);
+           nui.get("accountBank").setValue(orgid);
+           nui.get("accountBank").disable();
+       }else{
+           nui.get("accountBank").enable();
+           nui.get("accountBank").setText("");
+           nui.get("accountBank").setValue("");
+       }
+    }
+
+    function onOpenTG()
+    {
+        if(nui.get("#id_open_tg").getChecked())
+        {
+            $("#id_acc_info").show();
+        }
+        else
+        {
+            $("#id_acc_info").hide();
+        }
+    }
+
+    function authConfig(param){
+        var url = "${basePath}/goframe/func/pms.acc.dataRoom_add?accountStatus=1&parentAccountType="+param;
+        window.parent.showTab(url,'data_list' , '资料清单', true);
+    }
+
+    function onButtonClick(){
+        nui.open({
+            url:"${basePath}/goframe/func/pms.acc.pmselect_list",
+            title: "项目查询", width: 700, height: 540,
+            onload: function () {
+
+            },
+            ondestroy: function (action) {
+                var t=this.getIFrameEl().contentWindow.setData();//
+                if(action=="ok"){
+                    nui.get("projectId").setValue(t.projectId);
+                    nui.get("projectId").setText(t.pjName);
+                    nui.get("acc.accountName").setValue(nui.get("projectId").text);
+                    $("#id_acc_info").show();
+                    //查询出此类项目的某些账户是否处在开户申请中（apply表中有此条记录）或者已开户（account有此条记录）
+                    nui.ajax({
+                        url : "${basePath}/acc/queryAddedAccountType?projectId="+t.projectId,
+                        type : "post",
+                        cache: false,
+                        async: false,
+                        contentType : "application/json",
+                        success : function(text) {
+                            var message="";
+                            var isOpenTg,isOpenSf,isOpenFr,isOpenGzqh,isOpenYhjzy,isOpenYhjsh,isOpenZqsh,isOpenZqsz,isOpenZqbj;
+
+                            if(text.msg==1){
+                                isOpenTg= text.data.isOpenTg;//是否开通托管专户
+                                isOpenSf=text.data.isOpenSf;//是否开通三方存管账户
+                                isOpenFr=text.data.isOpenFr;//是否开通法人结算账户
+
+                                isOpenGzqh=text.data.isOpenGzqh;//是否开通股指期货账户
+                                isOpenYhjzy=text.data.isOpenYhjzy;//是否开通中央债券结算公司债券交易账户
+                                isOpenYhjsh=text.data.isOpenYhjsh;//是否开通上海清算所债券交易账户
+
+                                isOpenZqsh=text.data.isOpenZqsh;//是否开通中国结算上海分公司证券账户
+                                isOpenZqsz=text.data.isOpenZqsz;//是否开通中国结算深圳分公司证券账户
+                                isOpenZqbj=text.data.isOpenZqbj;//是否开通中国结算北京分公司证券账户
+                                var  accountBank= t.accountBank;
+                                if(accountBank!=null){
+
+                                    var tg = nui.get("id_open_tg");
+                                    if(isOpenTg!=true) {
+                                        $("#id_acc_info").show();
+                                        tg.enable();
+                                        if (accountBank.indexOf("托") != -1) {
+                                            if (tg.checked == false) {
+                                                tg.setChecked(!tg.getChecked());
+                                            }
+                                            BranchLevelByOrgType(orgType);
+                                        }
+                                    }else{
+                                        if (tg.checked == true) {
+                                            tg.setChecked(!tg.getChecked());
+                                        }
+                                        message="托管户已完成申请开户;";
+                                        $("#id_acc_info").hide();
+                                        tg.disable();
+
+                                    }
+                                    var sf=nui.get("acc.isOpenSF");
+                                    if(isOpenSf!=true) {
+                                        sf.enable();
+                                        if(accountBank.indexOf("券商")!=-1){
+                                            if(sf.checked==false){
+                                                sf.setChecked(!sf.getChecked());
+                                            }
+                                        }
+                                    }else{
+                                        if(sf.checked==true){
+                                            sf.setChecked(!sf.getChecked());
+                                        }
+                                        message=message+"券商模式;";
+                                        sf.disable();
+                                    }
+                                    var fr=nui.get("acc.isOpenFR");
+                                    if(isOpenFr!=true){
+                                        fr.enable();
+                                        if(accountBank.indexOf("法")!=-1){
+                                            if(fr.checked==false){
+                                                fr.setChecked(!fr.getChecked());
+                                            }
+                                        }
+                                    }else{
+                                        if(fr.checked==true){
+                                            fr.setChecked(!fr.getChecked());
+                                        }
+                                        message=message+"法人结算;";
+                                        fr.disable();
+                                    }
+
+                                    $("#id_acc_zqsh").show();
+                                    var zqsh=nui.get("id_open_zqsh");
+                                    var zq=nui.get("id_open_zq");
+
+                                    if(isOpenZqsh!=true){
+                                        zqsh.enable();
+                                        zq.enable();
+                                        if(accountBank.indexOf("结算上")!=-1){
+                                            if(zqsh.checked==false){
+                                                zqsh.setChecked(!zqsh.getChecked());
+                                            }
+                                        }
+                                    }else{
+                                        if(zqsh.checked==true){
+                                            zqsh.setChecked(!zqsh.getChecked());
+                                        }
+                                        message=message+"中国结算上海分公司证券账户;";
+                                        zqsh.disable();
+                                        zq.disable();
+                                    }
+
+                                    $("#id_acc_zqsz").show();
+                                    var zqsz=nui.get("id_open_zqsz");
+                                    if(isOpenZqsz!=true){
+                                        zqsz.enable();
+                                        zq.enable();
+                                        if(accountBank.indexOf("结算深")!=-1){
+                                            if(zqsz.checked==false){
+                                                zqsz.setChecked(!zqsz.getChecked());
+                                            }
+                                        }
+                                    }else{
+                                        if(zqsz.checked==true){
+                                            zqsz.setChecked(!zqsz.getChecked());
+                                        }
+                                        message=message+"中国结算深圳分公司证券账户;";
+                                        zqsz.disable();
+                                        zq.disable();
+                                    }
+                                    $("#id_acc_zqbj").show();
+                                    var zqbj=nui.get("id_open_zqbj");
+                                    if(isOpenZqbj!=true){
+                                        zq.enable();
+                                        zqbj.enable();
+                                        if(accountBank.indexOf("结算北")!=-1){
+                                            if(zqbj.checked==false){
+                                                zqbj.setChecked(!zqbj.getChecked());
+                                            }
+                                        }
+                                    }else{
+                                        if(zqbj.checked==true){
+                                            zqbj.setChecked(!zqbj.getChecked());
+                                        }
+                                        message=message+"中国结算北京分公司证券账户;";
+                                        zqbj.disable();
+                                        zq.disable();
+                                    }
+                                    if(isOpenZqbj==true&&isOpenZqsz==true&&isOpenZqsh==true) {
+                                        nui.get("#id_open_zqsh").setChecked(false);
+                                        nui.get("#id_open_zqsz").setChecked(false);
+                                        nui.get("#id_open_zqbj").setChecked(false);
+                                        $("#id_acc_zqsh").hide();
+                                        $("#id_acc_zqsz").hide();
+                                        $("#id_acc_zqbj").hide();
+
+                                        nui.get("#id_open_zq").disable();
+                                    }else if(isOpenZqsh==true||isOpenZqsz==true||isOpenZqbj==true){
+                                        nui.get("#id_open_zq").disable();
+                                    }else if(isOpenZqsh!=true&&isOpenZqsz!=true&&isOpenZqbj==true){
+                                        nui.get("#id_open_zq").enable();
+                                    }
+
+
+                                    var gzqh=nui.get("id_open_gzqh");
+                                    if(isOpenGzqh!=true){
+                                        gzqh.enable();
+                                        if(accountBank.indexOf("股")!=-1){
+                                            if(gzqh.checked==false){
+                                                gzqh.setChecked(!gzqh.getChecked());
+                                            }
+                                        }
+                                    }else{
+                                        if(gzqh.checked==true){
+                                            gzqh.setChecked(!gzqh.getChecked());
+                                        }
+                                        message=message+"开立股指期货账户;";
+                                        gzqh.disable();
+                                    }
+
+                                    $("#id_acc_yhjzy").show();
+                                    var yhjzy=nui.get("id_open_yhjzy");
+                                    var yhj=nui.get("id_open_yhj");
+                                    if(isOpenYhjzy!=true){
+                                        yhjzy.enable();
+                                        yhj.enable();
+                                        if(accountBank.indexOf("中央债券")!=-1){
+                                            if(yhjzy.checked==false){
+                                                yhjzy.setChecked(!yhjzy.getChecked());
+                                            }
+                                        }
+                                    }else{
+                                        if(yhjzy.checked==true){
+                                            yhjzy.setChecked(!yhjzy.getChecked());
+                                        }
+                                        message=message+"中央债券结算公司债券交易账户;";
+                                        yhjzy.disable();
+                                        yhj.disable();
+                                    }
+                                    $("#id_acc_yhjsh").show();
+                                    var yhjsh=nui.get("id_open_yhjsh");
+                                    if(isOpenYhjsh!=true){
+                                        yhj.enable();
+                                        yhjsh.enable();
+                                        if(accountBank.indexOf("上海清算")!=-1){
+                                            if(yhjsh.checked==false){
+                                                yhjsh.setChecked(!yhjsh.getChecked());
+                                            }
+                                        }
+                                    }else{
+                                        if(yhjsh.checked==true){
+                                            yhjsh.setChecked(!yhjsh.getChecked());
+                                        }
+                                        message=message+"上海清算所债券交易账户;";
+                                        yhjsh.disable();
+                                        yhj.disable();
+                                    }
+                                    if(isOpenYhjsh==true&&isOpenYhjzy==true) {
+                                        nui.get("#id_open_yhjzy").setChecked(false);
+                                        nui.get("#id_open_yhjsh").setChecked(false);
+                                        $("#id_acc_yhjzy").hide();
+                                        $("#id_acc_yhjsh").hide();
+                                        nui.get("#id_open_yhj").disable();
+                                    }else   if(isOpenYhjsh==true||isOpenYhjzy==true) {
+                                        nui.get("#id_open_yhj").disable();
+                                    }else  if(isOpenYhjsh!=true&&isOpenYhjzy!=true) {
+                                        nui.get("#id_open_yhj").enable();
+                                    }
+                                }
+
+                            }
+
+
+                        },
+                        error : function(jqXHR, textStatus,
+                                         errorThrown) {
+                        }
+                    });
+                    nui.get("projectId").validate();
+
+              /*  if(message!=""){
+                nui.alert(message+"已完成申请开户");
+                }*/
+            }
+            }
+
+        });
+    }
+
+    function bankTypeName(orgid){
+        var name;
+        $.ajax({
+            url: "${basePath}/pms/queryOrgnameByOrgid?orgid="+orgid,
+            type: 'get',
+            data:"",
+            cache: false,
+            async: false,
+            contentType: 'application/json',
+            success: function (t) {
+                name=t.orgname;
+            }
+        });
+        return name;
+    }
+
+    function onOpenZQ()
+    {
+        if(nui.get("#id_open_zq").getChecked())
+        {
+            $("#id_acc_zqsh").show();
+            $("#id_acc_zqsz").show();
+            $("#id_acc_zqbj").show();
+            nui.get("#id_open_zqsh").setChecked(true);
+            nui.get("#id_open_zqsz").setChecked(true);
+            nui.get("#id_open_zqbj").setChecked(true);
+        }
+        else
+        {
+            nui.get("#id_open_zqsh").setChecked(false);
+            nui.get("#id_open_zqsz").setChecked(false);
+            nui.get("#id_open_zqbj").setChecked(false);
+            $("#id_acc_zqsh").hide();
+            $("#id_acc_zqsz").hide();
+            $("#id_acc_zqbj").hide();
+        }
+    }
+
+    function onOpenYHJ()
+    {
+        if(nui.get("#id_open_yhj").getChecked())
+        {
+            $("#id_acc_yhjzy").show();
+            $("#id_acc_yhjsh").show();
+            nui.get("#id_open_yhjzy").setChecked(true);
+            nui.get("#id_open_yhjsh").setChecked(true);
+        }
+        else
+        {
+            nui.get("#id_open_yhjzy").setChecked(false);
+            nui.get("#id_open_yhjsh").setChecked(false);
+            $("#id_acc_yhjzy").hide();
+            $("#id_acc_yhjsh").hide();
+        }
+    }
+
+
+    function onSave(){
+        saveData();
+    }
+
+    function onSubmit(){
+        submitData();
+    }
+    function frAndSf(){
+        var fr=nui.get("acc.isOpenFR");
+        var sf=nui.get("acc.isOpenSF");
+
+
+        if((fr.getChecked()&&sf.getChecked())||(!fr.enabled&&sf.getChecked())||(fr.getChecked()&&!sf.enabled)){
+            if(fr.checked==true){
+                fr.setChecked(!fr.getChecked());
+            }
+            if(sf.checked==true){
+                sf.setChecked(!sf.getChecked());
+            }
+            nui.alert("券商模式(三方存管账户)和法人结算(席位租用)不能同时开立");
+            return;
+        }
+    }
+    function submitData(){
+        if(!(nui.get("id_open_tg").getChecked()||nui.get("acc.isOpenFR").getChecked()||nui.get("acc.isOpenSF").getChecked()||
+                nui.get("id_open_zqsh").getChecked()||nui.get("id_open_zqsz").getChecked()||nui.get("id_open_zqbj").getChecked()||
+                nui.get("id_open_gzqh").getChecked()||nui.get("id_open_yhjzy").getChecked()||nui.get("id_open_yhjsh").getChecked())){
+            nui.alert("请选择一种账户种类");
+            return;
+        }
+
+        if(nui.get("id_open_tg").getChecked() && nui.get("accountBank").getValue ==null ){
+            nui.alert("开户行不能为空");
+            return;
+        }
+
+        form.validate();
+        if(form.isValid()==false) return;
+        var data = form.getData(true,true);
+        data.acc.notes = accnotesEditor.html();
+        data.acc.projectName = nui.get("projectId").text;
+        data.acc.accountBankName = nui.get("accountBank").text;
+        data.acc.docId=nui.get("hidden_doc_id").getValue();
+        var json = nui.encode(data.acc);
+        var messageid = nui.loading("数据提交中，请稍后...","提交中");
+        var json = nui.encode(data.acc);
+        $.ajax({
+            url:"${basePath}/acc/submitAccountApplyInfo",
+            type:'POST',
+            data:json,
+            cache:false,
+            contentType:'application/json',
+            success:function(text){
+                nui.hideMessageBox(messageid);
+                var returnJson =text;
+                if(returnJson.status == true){
+                    if(returnJson.userCheckResult==null){
+                        nui.alert( "提交账户开户申请信息成功", "系统提示", function (action) {
+                            CloseWindow("saveSuccess");
+                        });
+                    }
+                    else{
+                        nui.alert(returnJson.userCheckResult,"系统提示", function (action) {
+                            if (action == "ok" || action == "close") {
+                                return;
+                            }
+                        });
+                    }
+                }else{
+                    nui.alert("提交账户开户申请信息失败", "系统提示", function(action){
+                        if(action == "ok" || action == "close"){
+                            return;
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    function saveData(){
+        if(nui.get("id_open_tg").getChecked() && nui.get("accountBank").getValue ==null ){
+            nui.alert("开户行不能为空");
+            return;
+        }
+           form.validate();
+        if(form.isValid()==false) return;
+        var data = form.getData(true,true);
+        data.acc.notes = accnotesEditor.html();
+        data.acc.projectName = nui.get("projectId").text;
+        data.acc.accountBankName = nui.get("accountBank").text;
+        data.acc.docId=nui.get("hidden_doc_id").getValue();
+        var json = nui.encode(data.acc);
+        var messageid = nui.loading("数据保存中，请稍后...","保存中");
+        $.ajax({
+            url:"${basePath}/acc/saveAccountApplyInfo",
+            type:'POST',
+            data:json,
+            cache:false,
+            contentType:'application/json',
+            success:function(text){
+                nui.hideMessageBox(messageid);
+                var returnJson =text;
+			    if(returnJson.status == true){
+                    nui.alert("新增账户申请信息成功", "系统提示", function(action){
+                        CloseWindow("saveSuccess");
+                    });
+			    }else{
+				    nui.alert("新增账户申请信息失败", "系统提示", function(action){
+					    if(action == "ok" || action == "close"){
+						    return;
+					    }
+				    });
+			    }
+            }
+        });
+    }
+
+ /*   function setAccName(){
+        nui.get("acc.accountName").setValue(nui.get("projectId").text);
+    }*/
+
+    function onReset(){
+        form.reset();
+        form.setChanged(false);
+    }
+    
+    function onCancel(){
+        CloseWindow("cancel");
+    }
+    
+    function CloseWindow(action){
+        if(action=="close" && form.isChanged()){
+            if(confirm("数据已改变,是否确认关闭?")){
+                return window.close();
+            }else{
+                return false;
+            }
+        }else if(window.CloseOwnerWindow){
+            return window.CloseOwnerWindow(action);
+        }else{
+            return window.close();
+        }
+    }
+
+
+
+
+    function checkInputProjectName()
+    {
+        var projectName = nui.get("projectId").text;
+        if(projectName=="")
+        {
+            return;
+        }
+        var obj={"pjName":projectName};
+        var json = nui.encode(obj);
+        $.ajax({
+            url:"${basePath}/pms/queryProjectIdByName",
+            type:'POST',
+            data:json,
+            cache:false,
+            contentType:'application/json',
+            success:function(text){
+                var returnJson =text;
+                if(returnJson.status == true){
+                    nui.get("projectId").setValue(returnJson.projectId);
+                }else{
+                    nui.alert("输入的项目名称不存在");
+                    nui.get("projectId").setText("");
+                }
+            }
+        });
+    }
+
+
+
+    function onCloseClick(e) {
+        var obj = e.sender;
+        obj.setText("");
+        obj.setValue("");
+    }
+    function onbankTypeButtonClick(){
+        nui.open({
+            url:"${basePath}/goframe/func/pms.pm.pmagency_list",
+            title: "托管户开户行查询", width: 700, height: 500,
+            onload: function () {
+
+            },
+            ondestroy: function (action) {
+                var t1 = this.getIFrameEl().contentWindow.setData();
+                if(action=="ok") {
+                    nui.get("accountBank").setValue(t1.orgid);
+                    nui.get("accountBank").setText(t1.orgname);
+                }
+                nui.get("accountBank").validate();
+            }
+        });
+
+    }
+</script>
+<!--#end-->
